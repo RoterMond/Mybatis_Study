@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的 -->
+<mapper namespace="dao.BoardDao">
+	<!-- 在select标签中编写查询的SQL语句， 设置select标签的id属性为findBoardById，id属性值必须是唯一的，不能够重复 
+		使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型 resultType="bean.Board"就表示将查询结果封装成一个Board类的对象返回 
+		Board类就是board表所对应的实体类 -->
+	<!-- 根据id查询得到一个board对象 -->
+	<!-- #表示预处理，$表示不需预处理 -->
+
+	<!-- 查询 -->
+	<select id="findBoardById" resultType="bean.Board">
+		select * from board where boardId=#{id}
+	</select>
+	<select id="findAllBoard" resultType="bean.Board">
+		select * from board
+	</select>
+	<select id="findBoardByNameAndRemark" resultType="bean.Board">
+		select * from
+		board where boardName like '${boardName}%' and remark like
+		'${remark}%'
+	</select>
+	<!-- 插入 -->
+	<insert id="insertBoard">
+		insert into board (boardName, remark)
+		values (#{boardName}, #{remark})
+	</insert>
+	<!-- 更新 -->
+	<update id="updateBoard">
+		update board set boardName = #{boardName}, remark =
+		#{remark} where boardId = #{boardId}
+	</update>
+	<!-- 删除 -->
+	<delete id="deleteBoard">
+		delete from board where boardId = #{id}
+	</delete>
+	<!-- 批量删除 -->
+	<!-- delete from board where boardId in (id1,id2) -->
+	<delete id="deleteBoardList">
+		delete from board where boardId in
+		<!-- collection还可以为数组array -->
+		<foreach collection="list" open="(" separator="," close=")"
+			item="id">
+			#{id}
+		</foreach>
+	</delete>
+	<!-- 动态SQL if -->
+	<select id="findBoardByIf" resultType="bean.Board">
+		select * from board where 1=1
+		<if test="boardName != null">
+			and boardName like '${boardName}%'
+		</if>
+	</select>
+	<!-- 动态SQL choose -->
+	<select id="findBoardByChoose" resultType="bean.Board">
+		select * from board where 1=1
+		<choose>
+			<when test="boardName != null">
+				and boardName like '${boardName}%'
+			</when>
+			<when test="remark != null">
+				and remark like '${remark}%'
+			</when>
+			<otherwise>
+				order by boardId
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 动态SQL trim -->
+	<!-- prefix为前缀 prefixOverrides为替换第一个and或者or -->
+	<select id="findBoardByTrim" resultType="bean.Board">
+		select * from board
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="boardName != null">
+				and boardName like '${boardName}%'
+			</if>
+			<if test="remark != null">
+				and remark like '${remark}%'
+			</if>
+		</trim>
+	</select>
+	<!-- 动态SQL where -->
+	<!-- where标签会在语句后面自动添加where 并忽略第一个出现的and或者or -->
+	<select id="findBoardByWhere" resultType="bean.Board">
+		select * from board
+		<where>
+			<if test="boardName != null">
+				and boardName like '${boardName}%'
+			</if>
+			<if test="remark != null">
+				and remark like '${remark}%'
+			</if>
+		</where>
+	</select>
+
+
+</mapper>
