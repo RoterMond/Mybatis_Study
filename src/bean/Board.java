@@ -25,5 +25,10 @@ public class Board implements Serializable{
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	@Override
+	public String toString() {
+		return "Board [boardId=" + boardId + ", boardName=" + boardName + ", remark=" + remark + "]";
+	}
+	
 	
 }

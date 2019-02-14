@@ -92,6 +92,19 @@
 			</if>
 		</where>
 	</select>
-
+	
+	<!-- resultMap 使用适用于：当实体的属性和数据库表里的属性名字不一样时 -->
+	<!-- 使用的时候在方法调用resutltMap 填写id号，用resultMap就不能使用resultType，反之亦然 -->
+	<resultMap id="boardMap" type="bean.Board">
+	<!-- 配置主键时使用id -->
+	<id column="数据库里的属性名字1" property="java实体里的属性名字1"/>
+	<result column="数据库里的属性名字2" property="java实体里的属性名字2"/>
+	<result column="数据库里的属性名字3" property="java实体里的属性名字3"/>
+	<result column="数据库里的属性名字4" property="java实体里的属性名字4"/>
+	</resultMap>
+	
+	
+	
+	
 
 </mapper>

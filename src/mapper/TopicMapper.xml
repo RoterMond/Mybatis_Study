@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的 -->
+<mapper namespace="dao.TopicDao">
+	<!-- 第一种封装方式 -->
+	<resultMap type="bean.Topic" id="topicMap1">
+		<id column="topicId" property="topicId"/>
+		<result column="boardId" property="boardId"/>
+		<result column="userId" property="userId"/>
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="postTime" property="time"/>
+		<result column="boardId" property="boardId"/>
+		<result column="boardName" property="board.boardName"/>
+	</resultMap>
+	<!-- 第二种封装方式 -->
+	<!-- association可以使用分步骤查询+延迟加载 -->
+	<resultMap type="bean.Topic" id="topicMap2">
+		<id column="topicId" property="topicId"/>
+		<result column="boardId" property="boardId"/>
+		<result column="userId" property="userId"/>
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="postTime" property="time"/>
+		<association property="board" javaType="bean.Board">
+			<id column="boardId" property="boardId"/>
+			<result column="boardName" property="boardName"/>
+		</association>
+	</resultMap>
+	<!-- 多表联合查询,需要返回一个resultMap -->
+	<!-- 查询一个topic，返回他所对应的board版块的名称 -->
+	<select id="findAllTopicBoardName" resultMap="topicMap1">
+		select t.topicId,t.boardId,t.userId,t.title,t.content,t.postTime,b.boardId,b.boardName from board b,topic t 
+		where b.boardId = t.boardId
+	</select>
+	
+	<!-- 
+	分布查询
+	根据topicId来查询一个topic对象，然后根据topic的boardId来查询board表封装到resultMap
+	-->
+	<resultMap type="bean.Topic" id="topicMap3">
+		<id column="topicId" property="topicId"/>
+		<result column="boardId" property="boardId"/>
+		<result column="userId" property="userId"/>
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="postTime" property="time"/>
+		<association property="board" select="dao.BoardDao.findBoardById" column="boardId"></association>
+	</resultMap>
+	<select id="findTopicByStep" resultMap="topicMap3">
+		select * from topic where topicId = #{id}
+	</select>
+	
+	
+
+</mapper>
